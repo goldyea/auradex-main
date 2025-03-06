@@ -49,11 +49,16 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/20 via-gray-950 to-gray-950"></div>
+    <div className="min-h-screen bg-[#0D0D1F] flex items-center justify-center">
+      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/20 via-[#0D0D1F] to-[#0D0D1F]"></div>
 
       <div className="relative z-10 w-full max-w-md px-4">
         <div className="text-center mb-6">
+          <img
+            src="https://storage.googleapis.com/tempo-public-images/figma-exports%2Fgithub%7C93087797-1741047856057-node-7%3A3-1741047854577.png"
+            alt="Auradex Logo"
+            className="h-12 mx-auto mb-4"
+          />
           <h1 className="text-3xl font-bold text-white">
             Auradex Entertainment
           </h1>

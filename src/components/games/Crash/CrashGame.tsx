@@ -47,20 +47,35 @@ const CrashGame = ({ onWin, onLose }: CrashGameProps) => {
 
   // Use refs to maintain stable references to channel
   const channelRef = useRef<any>(null);
-  const channelNameRef = useRef(
-    `crash-game-${Math.random().toString(36).substring(2, 10)}`,
-  );
+  const channelNameRef = useRef(`crash-game-global`);
+  // Track if this client is the game host (first to join or designated host)
+  const isGameHost = useRef<boolean>(false);
+  // Use a shared seed for crash point calculation
+  const sharedSeed = useRef<number>(0);
 
   useEffect(() => {
     // Create channel only once
     if (!channelRef.current) {
+      // Use a global channel name that's the same for all users
+      channelNameRef.current = "crash-game-global";
       channelRef.current = supabase.channel(channelNameRef.current);
 
       // Set up event handlers
       channelRef.current
         .on("broadcast", { event: "game-state" }, (payload) => {
-          const { state, multiplier, elapsed, waitTime, crashPoints } =
+          const { state, multiplier, elapsed, waitTime, crashPoints, seed } =
             payload.payload;
+
+          // Update shared seed if provided
+          if (seed !== undefined) {
+            sharedSeed.current = seed;
+            // Calculate crash point based on shared seed
+            crashTime.current = calculateCrashPoint(seed);
+            console.log(
+              `Received shared seed: ${seed}, crash point: ${crashTime.current}`,
+            );
+          }
+
           setGameState(state);
           setCurrentMultiplier(multiplier || 1.0);
           setTimeElapsed(elapsed || 0);
@@ -72,11 +87,19 @@ const CrashGame = ({ onWin, onLose }: CrashGameProps) => {
 
           if (state === "waiting") {
             setIsWaiting(true);
+            // Clear any existing timer
+            if (waitingInterval.current) {
+              window.clearInterval(waitingInterval.current);
+            }
             startWaitingTimer(waitTime || 7);
           } else if (state === "running") {
             setIsWaiting(false);
+            // Start the game if we're not already running
+            if (gameState !== "running") {
+              startGame(false); // false means don't broadcast (to avoid loops)
+            }
           } else if (state === "crashed") {
-            handleGameCrash(multiplier);
+            handleGameCrash(multiplier, false); // false means don't broadcast (to avoid loops)
           }
         })
         .on("broadcast", { event: "player-joined" }, (payload) => {
@@ -94,16 +117,54 @@ const CrashGame = ({ onWin, onLose }: CrashGameProps) => {
           );
         });
 
+      // Add handler for game state requests
+      channelRef.current.on(
+        "broadcast",
+        { event: "request-game-state" },
+        (payload) => {
+          // Only respond if we're the host
+          if (isGameHost.current && gameState) {
+            try {
+              channelRef.current.send({
+                type: "broadcast",
+                event: "game-state",
+                payload: {
+                  state: gameState,
+                  multiplier: currentMultiplier,
+                  elapsed: timeElapsed,
+                  waitTime: waitingTime,
+                  crashPoints: previousCrashPoints,
+                },
+              });
+            } catch (error) {
+              console.error("Error sending game state:", error);
+            }
+          }
+        },
+      );
+
       // Subscribe to the channel
       try {
-        channelRef.current.subscribe();
+        channelRef.current.subscribe((status) => {
+          if (status === "SUBSCRIBED") {
+            console.log("Successfully subscribed to channel");
+            // Check if we're the first to join (become host)
+            // In a real implementation, you'd use presence to determine this
+            // For simplicity, we'll just set a flag after a delay
+            setTimeout(() => {
+              isGameHost.current = true;
+              // Simulate initial game state
+              simulateGameState();
+            }, 1000);
+          }
+        });
       } catch (error) {
         console.error("Error subscribing to channel:", error);
       }
+    } else {
+      // If channel already exists, just simulate game state
+      simulateGameState();
     }
-
-    // Simulate initial game state
-    simulateGameState();
 
     // Clean up animation frame on unmount
     return () => {
@@ -122,12 +183,38 @@ const CrashGame = ({ onWin, onLose }: CrashGameProps) => {
     };
   }, []);
 
-  // Simulate game state for demo purposes
+  // Calculate crash point based on seed
+  const calculateCrashPoint = (seed: number): number => {
+    // Use a deterministic algorithm based on the seed
+    // This ensures all clients get the same crash point
+    const hash = Math.sin(seed) * 10000;
+    const positiveHash = Math.abs(hash - Math.floor(hash));
+
+    // Generate a value between 1.0 and 10.0
+    // Using a distribution that favors lower values
+    return 1.0 + positiveHash * 9.0;
+  };
+
+  // Get game state from server or initialize new game
   const simulateGameState = () => {
-    // Set initial crash points
+    // Instead of using localStorage, we'll check if there's an active game in the channel
+    // First, let's set default values
     setPreviousCrashPoints([2.83, 2.18, 1.27, 1.23, 1.46, 1.39, 1.02, 4.59]);
 
-    // Start with waiting state
+    // Send a message to request current game state
+    if (channelRef.current) {
+      try {
+        channelRef.current.send({
+          type: "broadcast",
+          event: "request-game-state",
+          payload: { requesterId: user?.id },
+        });
+      } catch (error) {
+        console.error("Error requesting game state:", error);
+      }
+    }
+
+    // Default to waiting state until we receive a response
     setGameState("waiting");
     setIsWaiting(true);
     startWaitingTimer(7);
@@ -227,19 +314,27 @@ const CrashGame = ({ onWin, onLose }: CrashGameProps) => {
     animationFrame.current = requestAnimationFrame(updateGraph);
   };
 
-  const startGame = () => {
+  const startGame = (shouldBroadcast = true) => {
     setGameState("running");
     setIsWaiting(false);
     setCurrentMultiplier(1.0);
     setTimeElapsed(0);
     points.current = [{ x: 0, y: 0 }];
     startTime.current = null;
-    crashTime.current = 1 + Math.random() * 10; // Random crash between 1x and 11x
 
-    // Reset player cashouts for new round
-    setPlayers((prev) =>
-      prev.map((player) => ({ ...player, cashoutMultiplier: null })),
-    );
+    // Generate a new shared seed if we're the host
+    if (isGameHost.current && shouldBroadcast) {
+      // Generate a new random seed for this game
+      const newSeed = Math.floor(Math.random() * 1000000);
+      sharedSeed.current = newSeed;
+      crashTime.current = calculateCrashPoint(newSeed);
+      console.log(
+        `Generated new seed: ${newSeed}, crash point: ${crashTime.current}`,
+      );
+    }
+
+    // Reset players list for new round
+    setPlayers([]);
 
     if (gameInterval.current) window.clearInterval(gameInterval.current);
     if (animationFrame.current) cancelAnimationFrame(animationFrame.current);
@@ -253,9 +348,30 @@ const CrashGame = ({ onWin, onLose }: CrashGameProps) => {
       const elapsed = (Date.now() - gameStartTime) / 1000;
       setTimeElapsed(elapsed);
     }, 100);
+
+    // We no longer save to localStorage, only broadcast to the channel
+
+    // Broadcast game state if we should
+    if (channelRef.current && shouldBroadcast) {
+      try {
+        channelRef.current.send({
+          type: "broadcast",
+          event: "game-state",
+          payload: {
+            state: "running",
+            multiplier: 1.0,
+            elapsed: 0,
+            crashPoints: previousCrashPoints,
+            seed: sharedSeed.current, // Send the shared seed
+          },
+        });
+      } catch (error) {
+        console.error("Error broadcasting game state:", error);
+      }
+    }
   };
 
-  const handleGameCrash = (finalMultiplier: number) => {
+  const handleGameCrash = (finalMultiplier: number, shouldBroadcast = true) => {
     if (animationFrame.current) {
       cancelAnimationFrame(animationFrame.current);
       animationFrame.current = null;
@@ -264,10 +380,28 @@ const CrashGame = ({ onWin, onLose }: CrashGameProps) => {
     setGameState("crashed");
 
     // Add to previous crash points
-    setPreviousCrashPoints((prev) => {
-      const updated = [finalMultiplier, ...prev];
-      return updated.slice(0, 8); // Keep only the last 8 points
-    });
+    const updatedCrashPoints = [finalMultiplier, ...previousCrashPoints].slice(
+      0,
+      8,
+    );
+    setPreviousCrashPoints(updatedCrashPoints);
+
+    // Broadcast crash if we should
+    if (channelRef.current && shouldBroadcast) {
+      try {
+        channelRef.current.send({
+          type: "broadcast",
+          event: "game-state",
+          payload: {
+            state: "crashed",
+            multiplier: finalMultiplier,
+            crashPoints: updatedCrashPoints,
+          },
+        });
+      } catch (error) {
+        console.error("Error broadcasting crash:", error);
+      }
+    }
 
     // Handle loss if player didn't cash out
     if (hasBet && !players.find((p) => p.id === user?.id)?.cashoutMultiplier) {
@@ -300,6 +434,31 @@ const CrashGame = ({ onWin, onLose }: CrashGameProps) => {
     setTimeout(() => {
       setGameState("waiting");
       setIsWaiting(true);
+
+      // We no longer save to localStorage, only broadcast to the channel
+
+      // Broadcast waiting state if we should
+      if (channelRef.current && shouldBroadcast) {
+        try {
+          // Generate a new seed for the next game
+          const newSeed = Math.floor(Math.random() * 1000000);
+          sharedSeed.current = newSeed;
+
+          channelRef.current.send({
+            type: "broadcast",
+            event: "game-state",
+            payload: {
+              state: "waiting",
+              waitTime: 7,
+              crashPoints: updatedCrashPoints,
+              seed: newSeed, // Send the new seed for the next game
+            },
+          });
+        } catch (error) {
+          console.error("Error broadcasting waiting state:", error);
+        }
+      }
+
       startWaitingTimer(7);
     }, 3000);
   };
@@ -524,14 +683,38 @@ const CrashGame = ({ onWin, onLose }: CrashGameProps) => {
                 : `Join game`}
           </Button>
 
-          <div className="mt-6 flex items-center justify-between">
-            <div className="flex items-center">
-              <Users className="h-5 w-5 text-gray-400 mr-2" />
-              <span className="text-gray-400">{players.length} Players</span>
+          <div className="mt-6 flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <Users className="h-5 w-5 text-gray-400 mr-2" />
+                <span className="text-gray-400">{players.length} Players</span>
+              </div>
+              <div className="flex items-center">
+                <Coins className="h-5 w-5 text-yellow-500 mr-2" />
+                <span className="text-yellow-500">0</span>
+              </div>
             </div>
-            <div className="flex items-center">
-              <Coins className="h-5 w-5 text-yellow-500 mr-2" />
-              <span className="text-yellow-500">0</span>
+
+            {/* Current players */}
+            <div className="flex flex-col gap-2 mt-2">
+              <div className="text-sm text-gray-400 mb-1">Current Players:</div>
+              {players
+                .filter((p) => !p.cashoutMultiplier)
+                .map((player, index) => (
+                  <div key={player.id} className="flex items-center gap-2">
+                    <img
+                      src={player.avatar}
+                      alt={player.username}
+                      className="w-6 h-6 rounded-full"
+                    />
+                    <span className="text-white text-xs">
+                      {player.username}
+                    </span>
+                    <span className="text-yellow-400 text-xs">
+                      {player.betAmount}
+                    </span>
+                  </div>
+                ))}
             </div>
           </div>
         </div>
@@ -551,9 +734,9 @@ const CrashGame = ({ onWin, onLose }: CrashGameProps) => {
           </div>
 
           {/* Main game display */}
-          <div className="relative h-96 bg-[#0F0F2D] rounded-lg border border-[#1F1F3F] flex flex-col items-center justify-center mb-6 overflow-hidden">
+          <div className="relative h-[500px] bg-[#0F0F2D] rounded-lg border border-[#1F1F3F] flex flex-col items-center mb-6 overflow-hidden">
             {isWaiting ? (
-              <div className="text-center">
+              <div className="text-center mt-20">
                 <div className="text-6xl font-bold text-white mb-4">
                   {waitingTime > 0
                     ? `0:${waitingTime.toString().padStart(2, "0")}`
@@ -568,7 +751,7 @@ const CrashGame = ({ onWin, onLose }: CrashGameProps) => {
                 />
               </div>
             ) : gameState === "crashed" ? (
-              <div className="text-center">
+              <div className="text-center mt-20">
                 <div className="text-6xl font-bold text-red-500 mb-4">
                   CRASHED
                 </div>
@@ -584,7 +767,7 @@ const CrashGame = ({ onWin, onLose }: CrashGameProps) => {
                   height="300"
                   className="absolute inset-0 w-full h-full"
                 />
-                <div className="text-center relative z-10">
+                <div className="text-center relative z-10 mt-20">
                   <div className="text-8xl font-bold text-white mb-2">
                     {currentMultiplier.toFixed(2)}x
                   </div>

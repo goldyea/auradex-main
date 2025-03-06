@@ -29,6 +29,12 @@ const GameGrid = ({ games = defaultGames }: GameGridProps) => {
     <div className="bg-[#0F0F2D] p-6 rounded-xl w-full">
       <h2 className="text-2xl font-bold text-white mb-6">Popular games</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4 h-full">
+        {/* Popular tag */}
+        <div className="absolute -mt-12 ml-32">
+          <span className="bg-yellow-500 text-black text-xs px-2 py-1 rounded-md font-medium">
+            POPULAR
+          </span>
+        </div>
         {games.map((game) => (
           <GameCard
             key={game.id}

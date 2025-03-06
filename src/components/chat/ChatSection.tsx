@@ -64,12 +64,19 @@ const ChatSection = ({
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom when new messages arrive
+  // Don't auto-scroll to bottom when new messages arrive
+  // Only scroll to bottom on initial load
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    // Initial scroll position at a reasonable point, not at the bottom
+    if (scrollAreaRef.current && messagesEndRef.current) {
+      const scrollContainer = scrollAreaRef.current.querySelector(
+        "[data-radix-scroll-area-viewport]",
+      );
+      if (scrollContainer) {
+        scrollContainer.scrollTop = scrollContainer.scrollHeight * 0.6;
+      }
     }
-  }, [messages]);
+  }, []);
 
   const handleSendMessage = () => {
     if (newMessage.trim()) {
@@ -102,7 +109,7 @@ const ChatSection = ({
   };
 
   return (
-    <div className="bg-[#0F0F2D] rounded-xl shadow-lg overflow-hidden flex flex-col h-full w-full border border-[#1F1F3F]">
+    <div className="bg-[#0F0F2D] rounded-xl shadow-lg overflow-hidden flex flex-col h-[400px] w-full border border-[#1F1F3F]">
       <div className="bg-[#1F1F3F] p-3 border-b border-[#2F2F4F] flex justify-between items-center">
         <h2 className="text-lg font-bold text-white">Chat</h2>
         <div className="flex items-center gap-2">

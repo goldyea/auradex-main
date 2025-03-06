@@ -1,31 +1,23 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth";
-import Sidebar from "@/components/layout/Sidebar";
-import CrashGame from "@/components/games/Crash/CrashGame";
-import ChatSection from "@/components/chat/ChatSection";
-import ActivityFeed from "@/components/dashboard/ActivityFeed";
+import MainLayout from "@/components/layout/MainLayout";
+import CrashGameNew from "@/components/games/Crash/CrashGameNew";
+import { supabase } from "@/lib/supabase";
+import ChatTabbed from "@/components/chat/ChatTabbed";
+import ActivityTable from "@/components/dashboard/ActivityTable";
 import { useToast } from "@/components/ui/use-toast";
 import {
   fetchChatMessages,
   sendChatMessage,
   fetchRecentGameSessions,
 } from "@/lib/api";
-import { supabase } from "@/lib/supabase";
 
 const CrashPage = () => {
-  const { user, signOut, updateUser } = useAuth();
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const { user, updateUser } = useAuth();
   const { toast } = useToast();
   const [chatMessages, setChatMessages] = useState([]);
   const [activityFeed, setActivityFeed] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // Force scroll to top when component mounts
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-  }, []);
 
   useEffect(() => {
     const loadData = async () => {
@@ -35,13 +27,9 @@ const CrashPage = () => {
           const messages = await fetchChatMessages();
           setChatMessages(
             messages.map((msg) => ({
-              id: msg.id,
-              user: {
-                name: msg.users.username,
-                avatar: msg.users.avatar_url,
-              },
-              content: msg.message,
-              timestamp: new Date(msg.created_at),
+              user: msg.users.username,
+              message: msg.message,
+              time: formatTimeAgo(new Date(msg.created_at)),
             })),
           );
 
@@ -49,15 +37,12 @@ const CrashPage = () => {
           const sessions = await fetchRecentGameSessions();
           setActivityFeed(
             sessions.map((session) => ({
-              id: session.id,
-              username: session.users.username,
-              avatar: session.users.avatar_url,
+              user: session.users.username,
               game: session.game_type,
-              betAmount: session.bet_amount,
-              outcome: session.outcome_amount,
-              timestamp: new Date(session.created_at).toLocaleString(),
-              isHighWin: session.outcome_amount > 1000,
-              isLuckyWin: session.multiplier > 5,
+              bet: session.bet_amount,
+              multiplier: session.multiplier,
+              payout: session.outcome_amount,
+              win: session.outcome_amount > 0,
             })),
           );
         } catch (error) {
@@ -89,13 +74,9 @@ const CrashPage = () => {
             setChatMessages((prev) => [
               ...prev,
               {
-                id: data.id,
-                user: {
-                  name: data.users.username,
-                  avatar: data.users.avatar_url,
-                },
-                content: data.message,
-                timestamp: new Date(data.created_at),
+                user: data.users.username,
+                message: data.message,
+                time: formatTimeAgo(new Date(data.created_at)),
               },
             ]);
           }
@@ -119,15 +100,12 @@ const CrashPage = () => {
           if (data) {
             setActivityFeed((prev) => [
               {
-                id: data.id,
-                username: data.users.username,
-                avatar: data.users.avatar_url,
+                user: data.users.username,
                 game: data.game_type,
-                betAmount: data.bet_amount,
-                outcome: data.outcome_amount,
-                timestamp: new Date(data.created_at).toLocaleString(),
-                isHighWin: data.outcome_amount > 1000,
-                isLuckyWin: data.multiplier > 5,
+                bet: data.bet_amount,
+                multiplier: data.multiplier,
+                payout: data.outcome_amount,
+                win: data.outcome_amount > 0,
               },
               ...prev.slice(0, 9),
             ]);
@@ -142,10 +120,21 @@ const CrashPage = () => {
     };
   }, [user]);
 
-  const handleSendMessage = async (message: string) => {
+  const handleSendMessage = async (message) => {
     if (user) {
       await sendChatMessage(user.id, message);
     }
+  };
+
+  const formatTimeAgo = (date) => {
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - date) / 1000);
+
+    if (diffInSeconds < 60) return `${diffInSeconds}s ago`;
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400)
+      return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    return `${Math.floor(diffInSeconds / 86400)}d ago`;
   };
 
   const handleWin = (amount: number) => {
@@ -177,90 +166,73 @@ const CrashPage = () => {
   if (!user) return null;
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#070720]">
-      {/* Sidebar */}
-      <Sidebar
-        username={user.username}
-        avatarUrl={user.avatar_url}
-        balance={user.aura_balance}
-        isCollapsed={sidebarCollapsed}
-        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-        onLogout={signOut}
-      />
+    <MainLayout title="Crash Game">
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12 lg:col-span-9 space-y-6">
+          {/* Game area */}
+          <div className="bg-[#0F0F2D] rounded-xl p-6">
+            <CrashGameNew onWin={handleWin} onLose={handleLoss} />
+          </div>
 
-      {/* Main content */}
-      <div className="flex-1 overflow-auto p-4">
-        <div className="mb-4 flex justify-between items-center bg-[#1F1F3F] rounded-lg p-3 sticky top-0 z-50">
-          <a href="/" className="flex items-center">
-            <img
-              src="https://safe.soul.lol/KFAq6dNT.png"
-              alt="Auradex"
-              className="h-8"
-            />
-          </a>
-
-          <div className="flex items-center space-x-4">
-            <a href="/games" className="text-gray-300 hover:text-white">
-              Games
-            </a>
-
-            <div className="flex items-center space-x-3">
-              <div className="flex items-center">
-                <img
-                  src="https://safe.soul.lol/9VCbKHag.svg"
-                  alt="Currency"
-                  className="h-5 w-5 mr-1"
-                />
-                <span className="text-yellow-400 font-medium">
-                  {user.aura_balance}
-                </span>
+          {/* Activity feed */}
+          <div className="bg-[#0F0F2D] rounded-xl p-6">
+            <h2 className="text-xl font-bold mb-4">Live Activity</h2>
+            {loading ? (
+              <div className="flex justify-center py-6">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
               </div>
-
-              <div className="relative cursor-pointer">
-                <img
-                  src={
-                    user.avatar_url ||
-                    `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`
-                  }
-                  alt={user.username}
-                  className="h-8 w-8 rounded-full"
-                />
-              </div>
-            </div>
+            ) : (
+              <ActivityTable activities={activityFeed} />
+            )}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {/* Game area - takes up 2/3 of the space */}
-          <div className="lg:col-span-2">
-            <CrashGame onWin={handleWin} onLose={handleLoss} />
-
-            {/* Activity feed below the game */}
-            <div className="mt-6">
-              {loading ? (
-                <div className="bg-gray-900 rounded-xl p-8 flex justify-center items-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
-                </div>
-              ) : (
-                <ActivityFeed recentBets={activityFeed} />
-              )}
+        {/* Chat section - takes up 3/12 of the space */}
+        <div className="col-span-12 lg:col-span-3 space-y-6">
+          {loading ? (
+            <div className="bg-[#0F0F2D] rounded-xl p-6 h-[400px] flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
             </div>
-          </div>
-
-          {/* Chat section - takes up 1/3 of the space */}
-          <div className="lg:col-span-1 h-full">
-            <ChatSection
+          ) : (
+            <ChatTabbed
               messages={chatMessages}
               onSendMessage={handleSendMessage}
-              currentUser={{
-                name: user.username,
-                avatar: user.avatar_url,
-              }}
             />
+          )}
+
+          {/* Game Rules */}
+          <div className="bg-[#0F0F2D] rounded-xl p-6">
+            <h2 className="text-xl font-bold mb-4">Game Rules</h2>
+            <ul className="space-y-2 text-gray-300 text-sm">
+              <li className="flex items-start">
+                <span className="text-yellow-400 mr-2">•</span>
+                <span>Place your bet before the round starts</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-yellow-400 mr-2">•</span>
+                <span>The multiplier increases as the game progresses</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-yellow-400 mr-2">•</span>
+                <span>Cash out before the crash to secure your winnings</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-yellow-400 mr-2">•</span>
+                <span>
+                  If you don't cash out before the crash, you lose your bet
+                </span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-yellow-400 mr-2">•</span>
+                <span>
+                  Set an auto cash-out to automatically secure your winnings
+                </span>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
-    </div>
+    </MainLayout>
   );
 };
 
