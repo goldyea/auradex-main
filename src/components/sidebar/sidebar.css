@@ -1,0 +1,92 @@
+@import url(../../components/styles/style.css);
+
+.sidebar_wrapper {
+  padding-top: 90px;
+  width: 88px;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  top: 0;
+  left: 0;
+  left: 0;
+  z-index: 111;
+}
+.side_bar_links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.side_bar_link_item {
+  margin: 15px 0 !important;
+}
+.side_bar_link_item a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+}
+.side_bar_link_item a p {
+  font-family: HalvarBreitschrift;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 12px;
+  letter-spacing: 0em;
+  color: rgba(81, 83, 95, 1);
+   margin-top: 10px;
+  transition: all 0.3s ease;
+}
+
+.sidebar_btm_discord {
+  margin-top: 40px;
+  margin-bottom: 10px;
+}
+.side_bar_link_item svg * {
+  transition: all 0.3s ease;
+}
+.side_bar_link_item a:hover p {
+  color: rgba(255, 255, 255, 1);
+  transition: all 0.3s ease;
+}
+.side_bar_link_item a:hover svg * {
+  transition: all 0.3s ease;
+  fill: #20a1ec;
+}
+.side_bar_link_item .active p {
+  color: rgba(255, 255, 255, 1);
+}
+.side_bar_link_item .active svg * {
+  fill: #20a1ec;
+}
+
+@media only screen and (max-width: 1540px) {
+  .sidebar_wrapper {
+    height: 87vh;
+  }
+  .side_bar_link_item {
+    margin: 11px 0 !important;
+  }
+  .side_bar_link_item a p {
+    font-family: HalvarBreitschrift;
+    font-size: 9px;
+    font-weight: 500;
+    line-height: 12px;
+    letter-spacing: 0em;
+    color: rgba(81, 83, 95, 1);
+
+    transition: all 0.3s ease;
+  }
+  .side_bar_link_item svg {
+    width: 27px;
+    height: 27px;
+  }
+}
+
+
+@media only screen and (max-width: 700px) {
+  .sidebar_wrapper {
+    display: none;
+  }
+}

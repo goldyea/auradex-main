@@ -1,0 +1,89 @@
+.stat_item div p {
+  font-size: 20px;
+}
+.affiliates_page .user_game_satists {
+  margin-top: 0;
+}
+.affiliates_page .header_table_content {
+  margin-top: 0;
+}
+
+.affliated_block {
+  margin-top: 18px;
+  border-radius: 11px;
+  width: 100%;
+  padding: 11px 17px;
+  background: rgba(27, 29, 41, 1);
+}
+
+.affliated_block div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 5px;
+}
+
+.affliated_block div input {
+  width: 90%;
+  height: 30px;
+  border: none;
+  outline: none;
+  background: transparent;
+
+  color: #fff;
+  font-size: 13px;
+  font-family: HalvarBreitschrift;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 28px;
+}
+
+.affliated_block div svg {
+  cursor: pointer;
+}
+
+.affiliates_page .left_profile {
+  height: 520px;
+}
+.affiliates_page .br_left p {
+  color: #fff;
+}
+.mob_aff_table {
+  display: none;
+}
+@media only screen and (max-width: 700px) {
+  .profile_wrapper {
+    flex-direction: column;
+  }
+  .affiliates_page .left_profile {
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+  }
+ .affiliates_page .user_game_satists {
+    border-radius: 11px;
+    background: var(--background-bg-dark-2, #1b1d29);
+    padding: 15px 20px;
+  }
+  .right_profile_table {
+    width: 100%;
+    height: auto;
+    margin-top: 60px;
+  }
+  .desktop_table {
+    display: none;
+  }
+  .mob_aff_table {
+    display: block;
+  }
+  .mob_aff_table .header_table {
+    display: none;
+  }
+  .right_profile_table {
+    margin-top: 20px;
+  }
+  .affiliates_page .left_profile {
+    background: transparent;
+    height: auto;
+  }
+}

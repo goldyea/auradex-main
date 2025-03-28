@@ -1,0 +1,334 @@
+.custom_page_top {
+  border-radius: 12px;
+  background: #212430;
+  padding: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.custom_page_top .total_inv,
+.selected_value_dep .total_inv {
+  display: flex;
+  align-items: center;
+}
+.vetical_gray_line {
+  width: 1px;
+  height: 20px;
+  background: #272935;
+  margin: 0 27px;
+}
+.selected_value_dep .vetical_gray_line {
+  width: 1px;
+  height: 42px;
+}
+.white {
+  color: #fff !important;
+  font-size: 13px !important;
+}
+.custom_page_top .main_p_style {
+  margin-bottom: 6px;
+}
+.selected_value_dep .main_p_style {
+  margin-bottom: 3px;
+}
+.mb_custom {
+  margin-bottom: 8px !important;
+}
+.custom_page_top .sign_submit_btn {
+  width: 176px;
+  margin: 0;
+  font-weight: 400;
+}
+.coinflip_list {
+  margin-top: 10px;
+}
+.coinflip_list_item {
+  width: 100%;
+  padding: 23px;
+  background: #141622;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.left_coinflip_profiles {
+  display: flex;
+  align-items: center;
+}
+.coinflip_avatar {
+  position: relative;
+  width: 42px;
+  cursor: pointer;
+}
+.coinflip_avatar svg {
+  position: absolute;
+  right: -10px;
+  top: 0;
+}
+.cpinflip_avatar_block {
+  display: flex;
+  align-items: center;
+}
+.cpinflip_avatar_block .main_p_style {
+  color: #fff;
+  margin-left: 20px;
+}
+
+.vs_block {
+  padding: 6px 15px;
+  width: 55px;
+  border-radius: 7px;
+  background: #1b1d29;
+  margin: 0 50px;
+}
+.vs_block p {
+  font-size: 15px;
+  font-family: HalvarBreitschrift;
+  font-style: italic;
+  font-weight: 700;
+  line-height: 18px;
+  color: #51535f;
+}
+
+.w_140px {
+  width: 140px;
+}
+.coin_block {
+  margin-left: 8%;
+  width: 60px;
+}
+.coin_block img {
+  width: 60px;
+}
+.coinflip_currencies_block {
+  display: flex;
+  align-items: center;
+  width: 333px;
+  margin-left: 6%;
+}
+.coinflip_currencies {
+  display: flex;
+  align-items: center;
+  margin: 0 auto;
+}
+.coinflip_currency_block {
+  width: 65px;
+  height: 65px;
+  border-radius: 60px;
+  border: 3px solid #141622;
+  background: #0f111c;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -30px;
+}
+
+.coinflip_currency_block img {
+  width: 45px;
+}
+.coinflip_currency_block p {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.green {
+  color: #65dc80 !important;
+}
+.right_cost_block .dflex_aicenter {
+  display: flex;
+  align-items: center;
+}
+.right_cost_block p {
+  margin-left: 10px;
+}
+
+.coinflip_modal .modal_small_cards_template {
+  position: relative;
+}
+.modal_gradient {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+.modal_gradient svg {
+  width: 100%;
+}
+
+.coinflip_modal .modal_small_cards_template {
+  grid-template-columns: repeat(5, 1fr);
+}
+.modal_coins {
+  margin-left: -30px;
+}
+.modal_coins img {
+  width: 40px;
+  height: 40px;
+  margin: 0 5px;
+}
+.coinflip_modal .total_inv .m_30 {
+  text-align: right;
+}
+.orange {
+  color: #ffc15b !important;
+  font-size: 13px !important;
+}
+
+.active_list {
+  background: linear-gradient(
+      156deg,
+      rgba(101, 220, 128, 0.04) 0%,
+      rgba(101, 220, 128, 0) 100%
+    ),
+    #141622;
+
+  border: 1px solid #65dc80;
+}
+
+.coinflip_avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  background: #0f111c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.coinflip_avatar p {
+  color: #fff;
+  text-align: center;
+  font-size: 17px;
+  font-family: HalvarBreitschrift;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.cpinflip_avatar_block .sign_submit_btn {
+  width: 100px !important;
+  margin: 0;
+  height: 34px;
+  border-radius: 5px;
+  margin-left: 14px;
+  font-size: 13px;
+  text-transform: capitalize;
+  font-family: "Montserrat", sans-serif;
+}
+.right_cost_block {
+  width: 145px;
+}
+.right_cost_block .dflex_aicenter {
+  justify-content: flex-end;
+  margin-bottom: 5px;
+}
+.desc_dn {
+  display: none;
+}
+
+@media only screen and (max-width: 1140px) {
+   .coinflip_list_item {
+    /* display: grid;
+    grid-template-columns: repeat(2, 1fr); */
+    flex-wrap: wrap;
+   }
+   .coinflip_page  {
+    padding-left: 20px;
+   }
+}
+.coinflip_modal_block .vetical_gray_line  {
+  margin: 0;
+}
+
+@media only screen and (max-width: 700px) {
+  .custom_page_top {
+    flex-direction: column;
+    padding: 12px;
+  }
+  .custom_page_top .total_inv {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .custom_page_top .sign_submit_btn {
+    width: 100%;
+    height: 41px;
+  }
+  .left_coinflip_profiles {
+    display: flex;
+    flex-direction: column;
+  }
+  .coinflip_list_item {
+    flex-wrap: wrap;
+    padding: 12px;
+    border-radius: 12px;
+    background: var(--background-bg-dark-2, #1b1d29);
+  }
+  .coinflip_currencies_block {
+    margin-left: 9%;
+    margin-top: 18px;
+  }
+  .vs_block,
+  .right_cost_block {
+    display: none;
+  }
+  .left_coinflip_profiles .cpinflip_avatar_block:first-child {
+    margin-bottom: 15px;
+  }
+  .coinflip_currencies {
+    width: 100%;
+  }
+  .coinflip_page {
+    margin-right: 0;
+    padding-right: 0 !important;
+  }
+
+  .coinflip_modal .sign_in_wrapper .total_inv .m_30:first-child {
+    display: none;
+  }
+
+  .coinflip_modal_block .selected_value_dep {
+    flex-direction: column-reverse;
+    flex-wrap: wrap;
+  }
+  .selected_value_dep .sign_submit_btn {
+    width: 100%;
+    margin: 10px 0;
+  }
+  .line_d_n {
+    display: none;
+  }
+  .desc_dn {
+    display: flex;
+  }
+  .coinflip_modal .modal_small_cards_template .modal_card_item {
+    width: 110px;
+    margin-right: 10px;
+  }
+  .modal_gradient {
+    position: absolute;
+    bottom: -13px;
+    width: 100%;
+  }
+  .coinflip_modal_block .selected_value_dep .total_inv {
+    width: 100%;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .coinflip_modal .total_inv .m_30 {
+    text-align: left;
+  }
+  .coinflip_modal .total_inv .m_30:nth-child(4),
+  .coinflip_modal .total_inv .vetical_gray_line:nth-child(5) {
+    margin-left: -80px;
+  }
+  .coinflip_modal .total_inv .m_30:nth-child(4) {
+    margin-left: -120px;
+  }
+  .coinflip_wrapper .total_inv .m_30 {
+    margin: 0;
+  }
+}

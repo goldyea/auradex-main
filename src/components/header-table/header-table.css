@@ -1,0 +1,143 @@
+.dflex_aicenter {
+  display: flex;
+  align-items: center;
+}
+
+thead tr {
+  color: #51535f;
+  text-align: left;
+  font-size: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 14px;
+}
+
+tbody tr {
+  background: transparent;
+}
+
+.colored_tr_bg {
+  background: #212430;
+}
+
+table thead {
+  height: 35px;
+}
+.left_20px {
+  padding-left: 20px;
+}
+.mr_12px {
+  margin-right: 12px;
+}
+
+.table_main_text_styles {
+  font-size: 13px;
+  font-family: "Montserrat", sans-serif;
+  font-style: normal;
+
+  line-height: 18px;
+  color: #fff;
+}
+.header_table tbody tr {
+  height: 55px;
+}
+.br_left {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+.colored_item {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+.br_left p,
+.header_table span {
+  color: #70717e;
+}
+.header_table span {
+  cursor: pointer;
+}
+.br_right td {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+.header_table {
+  border-collapse: collapse;
+}
+
+.colored_tr_bg .colored_item p {
+  color: rgba(101, 220, 128, 1);
+}
+.colored_tr_bg .colored_item svg * {
+  fill: rgba(101, 220, 128, 1);
+}
+.not_colored .colored_item p {
+  color: rgba(255, 71, 100, 1);
+}
+.not_colored .colored_item svg * {
+  fill: rgba(255, 71, 100, 1);
+}
+
+.header_table_mobile {
+  width: 100%;
+}
+.header_table_mob_items {
+  width: 100%;
+  border-radius: 12px;
+  padding: 15px;
+}
+.table_top_items {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.table_bottom_items {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+.bottom_table_item .main_p_style {
+  color: #51535f;
+  font-size: 12px;
+  margin-bottom: 9px;
+}
+.payout_table_mob p {
+  color: #65dc80;
+}
+.payout_table_mob svg * {
+  fill: #65dc80;
+}
+.show_more_btn {
+  width: 100%;
+  margin-top: 25px;
+  border-radius: 8px;
+  height: 42px;
+  background: var(--background-bg-dark-2, #1b1d29);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  font-family: "Montserrat", sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 18px;
+}
+.header_table_mobile {
+  display: none;
+}
+
+
+@media only screen and (max-width: 920px) {
+  .header_table {
+    display: none;
+  }
+  .header_table_content {
+    padding-bottom: 13px;
+    margin-bottom: 0;
+  }
+  .header_table_mobile {
+    display: block;
+  }
+}

@@ -1,0 +1,215 @@
+.main_content {
+  display: flex;
+  padding-top: 80px;
+}
+a {
+  text-decoration: none;
+}
+
+.main_content_wrapper {
+  width: 100%;
+  min-height: 90vh;
+  display: flex;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-left: 32px;
+  margin-left: 90px;
+  border-radius: 20px 0px 0px 0px;
+  background: #1b1d29;
+  position: relative;
+}
+.main_content_block {
+  width: 82%;
+}
+.m_content_center {
+  margin: 0 auto;
+}
+
+.chat_button {
+  position: fixed;
+  right: 20px;
+  top: 97px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 50%;
+  background: #20a1ec;
+  cursor: pointer;
+  box-shadow: 0px 1px 7px 0px rgba(255, 255, 255, 0.47) inset;
+}
+.chat_button svg {
+  margin: 0 auto;
+}
+.mobile_bottom_navigation {
+  width: 100%;
+  padding: 22px 33px;
+  border-radius: 20px 20px 0px 0px;
+  background: rgba(27, 29, 41, 0.98);
+  backdrop-filter: blur(13px);
+  position: fixed;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 161 !important;
+}
+.mobile_home_svg svg {
+  width: 26px;
+  height: 26px;
+}
+.bottom_nav_item {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.bottom_nav_item p {
+  color: #51535f;
+  font-family: HalvarBreitschrift;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  text-transform: uppercase;
+  margin-top: 10px;
+}
+.active_mob_menu svg * {
+  fill: #20a1ec;
+}
+.active_mob_menu p {
+  color: #fff !important;
+}
+.mobile_bottom_navigation {
+  display: none;
+}
+@media only screen and (max-width: 1710px) {
+  .main_content_block {
+    width: 78%;
+  }
+  .m_content_center {
+    width: 88%;
+  }
+  .tower_page {
+    max-width: 1440px !important;
+  }
+}
+@media only screen and (max-width: 1540px) {
+  .main_content_block {
+    width: 76%;
+  }
+  .m_content_center {
+    width: 85%;
+  }
+  .main_page_styles {
+    padding-top: 20px !important;
+    padding-right: 20px !important;
+  }
+  .profile_wrapper,
+  .home_page_carousel {
+    margin-top: 10px !important;
+  }
+}
+.m_content_center {
+  padding-bottom: 50px;
+}
+@media only screen and (max-width: 1450px) {
+  .mobile_bottom_navigation {
+    display: flex;
+  }
+  .chat_button {
+    display: none;
+  }
+  .m_content_center {
+    width: 100%;
+  }
+  .m_content_center {
+    padding-bottom: 100px;
+  }
+  .tower_page,
+  .upgrade_wrapper {
+    padding-bottom: 70px;
+  }
+}
+.main_page_styles .page_title svg {
+  display: none;
+}
+@media only screen and (max-width: 1270px) {
+  .main_content_wrapper {
+    padding-left: 0;
+  }
+  .pages_live_fee {
+    margin-left: 20px !important;
+    margin-right: 20px !important;
+  }
+  .coinflip_page {
+    padding-left: 20px;
+}
+}
+.pages_live_fee,
+.home_page_table {
+  margin-bottom: 0px;
+}
+
+@media only screen and (max-width: 700px) {
+  .main_content_wrapper {
+    margin: 0;
+    border-radius: 0;
+    background: #141622;
+    padding: 0;
+    padding-bottom: 100px;
+  }
+  .m_content_center,
+  .main_content_block {
+    width: 100%;
+    padding: 0 12px !important;
+  }
+  .main_content_block .main_page_styles {
+    padding-left: 0 !important;
+  }
+  .page_title {
+    margin-bottom: 15px;
+  }
+
+  .menu-container {
+    top: -10px !important;
+    right: -1000px !important;
+    z-index: 1111;
+  }
+  .chat_menu_wrapper {
+    width: 100% !important;
+  }
+
+  .chat_messages {
+    margin-top: 0;
+    height: 90% !important;
+  }
+  .menu-container.visible {
+    right: 0 !important;
+    z-index: 1111 !important;
+    position: fixed;
+  }
+
+  .chat_right_chevron {
+    margin-left: 2px !important;
+  }
+  .menu-container,
+  .menu-container.visible {
+    transition: right 0.3s ease-in-out !important;
+  }
+  .main_page_styles .page_title svg {
+    display: block;
+    margin-right: 15px;
+  }
+  .main_page_styles .page_title {
+    display: flex !important;
+    align-items: center;
+  }
+  .chat_messages {
+    padding: 0 12px !important;
+  }
+}
